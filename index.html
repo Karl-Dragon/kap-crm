@@ -11,7 +11,7 @@
 *{box-sizing:border-box}
 body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink);font-size:15px}
 header{padding:16px 16px 8px;max-width:900px;margin:0 auto}
-.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.top{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:4px 12px;margin-bottom:12px}.top h1{white-space:nowrap}
 h1{font-size:18px;margin:0;letter-spacing:.04em;text-transform:uppercase}
 .link{background:none;border:0;color:var(--mute);font:inherit;font-size:13px;cursor:pointer;text-decoration:underline}
 .kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
@@ -92,7 +92,7 @@ textarea{min-height:70px;resize:vertical}
 <!-- CRM -->
 <div class="hide" id="vApp">
 <header>
-  <div class="top"><h1>DragTak · CRM</h1><button class="link" id="logout">Se déconnecter</button></div>
+  <div class="top"><h1>DragTak · CRM</h1><div><button class="link" id="expCsv">Export Excel</button> · <button class="link" id="expJson">Sauvegarde</button> · <button class="link" id="logout">Se déconnecter</button></div></div>
   <div class="kpis">
     <div class="kpi"><b id="kActifs">–</b><span>prospects actifs</span></div>
     <div class="kpi"><b id="kMontant">–</b><span id="kMontantSub">pondéré · en jeu –</span></div>
@@ -274,6 +274,22 @@ $("yesDel").onclick=async()=>{
   if(error){$("fErr").textContent="Suppression impossible : "+error.message;return}
   fermer();charger();
 };
+// ---- Export / sauvegarde ----
+function telecharger(nom,contenu,type){
+  const url=URL.createObjectURL(new Blob([contenu],{type}));
+  const a=document.createElement("a");a.href=url;a.download=nom;document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),2000);
+}
+const stamp=()=>today().replaceAll("-","");
+$("expCsv").onclick=()=>{
+  const cols=[["unite","Unité"],["rattachement","Rattachement"],["interlocuteur","Interlocuteur"],["activite","Activité"],["verticale","Verticale"],["etape","Étape"],["probabilite","Probabilité (%)"],["montant","Montant (€ HT)"],["origine","Origine"],["prochaine","Prochaine action"],["echeance","Échéance"],["besoin","Besoin"],["journal","Journal"]];
+  const cell=v=>'"'+String(v??"").replace(/"/g,'""')+'"';
+  const val=(p,k)=>k==="etape"?(LIB[p.etape]||p.etape):k==="activite"?(p.activite==="conseil_cyber"?"Conseil cyber":"DragTak"):k==="journal"?(p.journal||[]).map(j=>j.d+" : "+j.t).join(" | "):p[k];
+  const lignes=[cols.map(c=>cell(c[1])).join(";"),...items.map(p=>cols.map(([k])=>cell(val(p,k))).join(";"))];
+  telecharger("KAP-CRM-"+stamp()+".csv","﻿"+lignes.join("\r\n"),"text/csv;charset=utf-8");
+};
+$("expJson").onclick=()=>telecharger("KAP-CRM-sauvegarde-"+stamp()+".json",JSON.stringify({export:new Date().toISOString(),prospects:items},null,2),"application/json");
+
 document.addEventListener("visibilitychange",()=>{if(!document.hidden&&!$("vApp").classList.contains("hide"))charger()});
 
 demarrer();
