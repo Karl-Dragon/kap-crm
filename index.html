@@ -154,7 +154,7 @@ const SUPABASE_URL="https://xosahsggsdkevbcjlutx.supabase.co";
 const SUPABASE_CLE="sb_publishable_TYPWbJo5pv_gr2KEd4uM6g_cWUI-8wX";
 const DOMAINE="@dragtak.fr";
 
-const sb=supabase.createClient(SUPABASE_URL,SUPABASE_CLE,{auth:{storageKey:"kap-crm",persistSession:true,autoRefreshToken:true}});
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_CLE,{auth:{storageKey:"kap-crm-"+new URL(SUPABASE_URL).hostname.split(".")[0],persistSession:true,autoRefreshToken:true}});
 const ETAPES=[["contact","1er contact"],["qualifie","Besoin qualifié"],["essai","Démo / essai"],["devis","Devis"],["signe","Signé"],["perdu","Perdu"]];
 const LIB=Object.fromEntries(ETAPES);
 let items=[],filtre="actifs",courant=null,journalTmp=[];
@@ -201,6 +201,7 @@ async function demarrer(){
 async function charger(){
   $("status").className="status";$("status").textContent="Chargement…";
   const {data,error}=await sb.rpc("crm_liste");
+  if(error&&/key|jwt|token/i.test(error.message)){await sb.auth.signOut({scope:"local"});vue("vLogin");$("lErr").textContent="Session expirée : reconnectez-vous.";return}
   if(error){$("status").className="status err";$("status").textContent=/ACCES/.test(error.message)?"Ce compte n'a pas accès au CRM.":"Lecture impossible : "+error.message;items=[];render();return}
   items=data||[];$("status").textContent="";render();
 }
