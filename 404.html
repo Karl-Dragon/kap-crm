@@ -59,6 +59,8 @@ textarea{min-height:70px;resize:vertical}
 .confirm.open{display:block}
 .gate{max-width:380px;margin:12vh auto 0;padding:24px;background:var(--card);border:1px solid var(--line);border-radius:14px}
 .gate h1{margin-bottom:4px}
+.brand{width:112px;height:112px;margin:0 auto 20px;background:#000;border-radius:24px;display:flex;align-items:center;justify-content:center}
+.brand img{width:64px;height:78px;object-fit:contain}
 .gate p{color:var(--mute);font-size:13px;margin:4px 0 12px}
 .hide{display:none!important}
 </style>
@@ -67,6 +69,7 @@ textarea{min-height:70px;resize:vertical}
 
 <!-- CONNEXION -->
 <section class="gate hide" id="vLogin">
+  <div class="brand"><img src="logo-vert.svg" alt="Logo DragTak"></div>
   <h1>DragTak · CRM</h1>
   <p>Accès réservé.</p>
   <form id="fLogin">
@@ -79,6 +82,7 @@ textarea{min-height:70px;resize:vertical}
 
 <!-- CHANGEMENT DU MOT DE PASSE PROVISOIRE -->
 <section class="gate hide" id="vMdp">
+  <div class="brand"><img src="logo-vert.svg" alt="Logo DragTak"></div>
   <h1>Nouveau mot de passe</h1>
   <p>Mot de passe provisoire : choisissez le vôtre. 18 caractères au moins, avec une minuscule, une majuscule, un chiffre et un caractère spécial.</p>
   <form id="fMdp">
